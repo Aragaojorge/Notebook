@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', include('contact.urls')),
     path('admin/', admin.site.urls),
 ]
+
+# To allow access to the image when click on the link it is needed to concatenate the MEDIA_URL and MEDIA_ROOT
+# to the urlpatterns. same thing to the STATIC files
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
