@@ -24,6 +24,11 @@
               {% comment %} line bellow will be used to check for errors in the form {% endcomment %}
               {% comment %} we need to set the def clean in the class ContactForm in contact_forms.py  {% endcomment %}
               {{ field.errors }}
+
+              {% if field.help_text %}
+                <p class="help-text">{{ field.help_text }}</p>
+              {% endif %}
+
             </div>
         {% endfor %}
 
