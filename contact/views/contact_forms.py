@@ -12,7 +12,7 @@ def create(request):
     # if any field is not empty and send is pressed we send data
     if request.method == 'POST':
         
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, request.FILES)
         
         context = {
             'form': form,
@@ -51,7 +51,7 @@ def update(request, contact_id):
     # if any field is not empty and send is pressed we send data
     if request.method == 'POST':
         
-        form = ContactForm(request.POST, instance=contact)
+        form = ContactForm(request.POST, request.FILES, instance=contact)
         
         context = {
             'form': form,
@@ -80,3 +80,14 @@ def update(request, contact_id):
         'contact/create.html',
         context,
     )
+    
+def delete(request, contact_id):
+    contact = get_object_or_404(Contact, pk=contact_id, show=True)
+    
+    confirmation = request.POST.get('confirmation', 'no')
+    
+    if confirmation == 'yes':
+        contact.delete()
+        return redirect('contact:index')
+    
+    return render(request, 'contact/contact.html', {'contact': contact, 'confirmation': confirmation})

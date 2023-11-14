@@ -9,20 +9,12 @@ from . import models
 
 # Create your form here
 class ContactForm(forms.ModelForm):
-    first_name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class': 'class-a class-b', 'placeholder': 'Aqui veio do init',
-                }
-            ),
-        )
     
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    picture = forms.ImageField(widget=forms.FileInput(attrs={'accept': 'image/*'}))
     
     class Meta:
         model = models.Contact
-        fields = ('first_name', 'last_name', 'phone', 'email', 'description', 'category')
+        fields = ('first_name', 'last_name', 'phone', 'email', 'description', 'category', 'picture',)
         
     # It is called before save data in database 
     def clean(self):
