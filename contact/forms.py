@@ -6,6 +6,7 @@ from django.core.files.base import File
 from django.db.models.base import Model
 from django.forms.utils import ErrorList
 from . import models
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your form here
 class ContactForm(forms.ModelForm):
@@ -45,4 +46,7 @@ class ContactForm(forms.ModelForm):
                 )
             )
         return first_name
+    
+class RegisterForm(UserCreationForm):
+    ...
     
