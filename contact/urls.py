@@ -15,4 +15,9 @@ urlpatterns = [
     
     # URL's to create contacts
     path('user/create/', views.register, name='register'),
+    
+    # URL to login and logout
+    path('user/login/', views.login_view, name='login'),
+    path('user/logout/', views.logout_view, name='logout'),
+    path('user/update/', views.user_update, name='user_update'),
 ]
