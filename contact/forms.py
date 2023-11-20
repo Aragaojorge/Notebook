@@ -4,14 +4,19 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from . import models
+
+
 class ContactForm(forms.ModelForm):
+    
     picture = forms.ImageField(
         widget=forms.FileInput(
             attrs={
                 'accept': 'image/*',
             }
-        )
+        ),
+        required=False
     )
+    
     class Meta:
         model = models.Contact
         fields = (
@@ -19,6 +24,7 @@ class ContactForm(forms.ModelForm):
             'email', 'description', 'category',
             'picture',
         )
+        
     def clean(self):
         cleaned_data = self.cleaned_data
         first_name = cleaned_data.get('first_name')
@@ -31,6 +37,7 @@ class ContactForm(forms.ModelForm):
             self.add_error('first_name', msg)
             self.add_error('last_name', msg)
         return super().clean()
+    
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
         if first_name == 'ABC':
@@ -42,24 +49,33 @@ class ContactForm(forms.ModelForm):
                 )
             )
         return first_name
+    
 class RegisterForm(UserCreationForm):
+    
     first_name = forms.CharField(
         required=True,
         min_length=3,
     )
+    
     last_name = forms.CharField(
         required=True,
         min_length=3,
     )
+    
     email = forms.EmailField()
+    
     class Meta:
+        
         model = User
         fields = (
             'first_name', 'last_name', 'email',
             'username', 'password1', 'password2',
         )
+        
     def clean_email(self):
+        
         email = self.cleaned_data.get('email')
+        
         if User.objects.filter(email=email).exists():
             self.add_error(
                 'email',
@@ -70,6 +86,7 @@ class RegisterForm(UserCreationForm):
 
 
 class RegisterUpdateForm(forms.ModelForm):
+    
     first_name = forms.CharField(
         min_length=2,
         max_length=30,
@@ -79,6 +96,7 @@ class RegisterUpdateForm(forms.ModelForm):
             'min_length': 'Please, add more than 2 letters.'
         }
     )
+    
     last_name = forms.CharField(
         min_length=2,
         max_length=30,
@@ -87,6 +105,7 @@ class RegisterUpdateForm(forms.ModelForm):
     )
 
     password1 = forms.CharField(
+        
         label="Password",
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
@@ -95,6 +114,7 @@ class RegisterUpdateForm(forms.ModelForm):
     )
 
     password2 = forms.CharField(
+        
         label="Password 2",
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
@@ -103,13 +123,16 @@ class RegisterUpdateForm(forms.ModelForm):
     )
 
     class Meta:
+        
         model = User
+        
         fields = (
             'first_name', 'last_name', 'email',
             'username',
         )
 
     def save(self, commit=True):
+        
         cleaned_data = self.cleaned_data
         user = super().save(commit=False)
         password = cleaned_data.get('password1')
@@ -123,6 +146,7 @@ class RegisterUpdateForm(forms.ModelForm):
         return user
 
     def clean(self):
+        
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
 
@@ -136,6 +160,7 @@ class RegisterUpdateForm(forms.ModelForm):
         return super().clean()
 
     def clean_email(self):
+        
         email = self.cleaned_data.get('email')
         current_email = self.instance.email
 
@@ -149,6 +174,7 @@ class RegisterUpdateForm(forms.ModelForm):
         return email
 
     def clean_password1(self):
+        
         password1 = self.cleaned_data.get('password1')
 
         if password1:
