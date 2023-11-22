@@ -1,0 +1,75 @@
+###############################################################################
+# Replace
+# notebook the name of the gunicorn file you want
+# deploy your user name
+# notebookapp the folder name of your project
+# project the folder name where you find a file called wsgi.py
+#
+###############################################################################
+# Criando o arquivo notebook.socket
+sudo nano /etc/systemd/system/notebook.socket
+
+###############################################################################
+# Conteúdo do arquivo
+[Unit]
+Description=gunicorn notebook socket
+
+[Socket]
+ListenStream=/run/notebook.socket
+
+[Install]
+WantedBy=sockets.target
+
+###############################################################################
+# Criando o arquivo notebook.service
+sudo nano /etc/systemd/system/notebook.service
+
+###############################################################################
+# Conteúdo do arquivo
+[Unit]
+Description=Gunicorn daemon (You can change if you want)
+Requires=notebook.socket
+After=network.target
+
+[Service]
+User=deploy
+Group=www-data
+Restart=on-failure
+# EnvironmentFile=/home/deploy/notebookapp/.env
+WorkingDirectory=/home/deploy/notebookapp
+# --error-logfile --enable-stdio-inheritance --log-level and --capture-output
+# are all for debugging purposes.
+ExecStart=/home/deploy/notebookapp/venv/bin/gunicorn \
+          --error-logfile /home/deploy/notebookapp/gunicorn-error-log \
+          --enable-stdio-inheritance \
+          --log-level "debug" \
+          --capture-output \
+          --access-logfile - \
+          --workers 6 \
+          --bind unix:/run/notebook.socket \
+          project.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+###############################################################################
+# Ativando
+sudo systemctl start notebook.socket
+sudo systemctl enable notebook.socket
+
+# Checando
+sudo systemctl status notebook.socket
+curl --unix-socket /run/notebook.socket localhost
+sudo systemctl status notebook
+
+# Restarting
+sudo systemctl restart notebook.service
+sudo systemctl restart notebook.socket
+sudo systemctl restart notebook
+
+# After changing something
+sudo systemctl daemon-reload
+
+# Debugging
+sudo journalctl -u notebook.service
+sudo journalctl -u notebook.socket
